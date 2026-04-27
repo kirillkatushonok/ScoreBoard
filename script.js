@@ -1,11 +1,9 @@
-// Общие данные
 let gameData = {
     score: { team1: 0, team2: 0 },
     timer: { minutes: 0, seconds: 0, isRunning: false },
     interval: null
 };
 
-// Функции обновления
 function updateDisplay() {
     const scoreElement = document.getElementById('score');
     const timerElement = document.getElementById('timer');
@@ -19,15 +17,13 @@ function updateDisplay() {
     }
 }
 
-// Управление счётом
 function changeScore(team, delta) {
     gameData.score[team] += delta;
     if (gameData.score[team] < 0) gameData.score[team] = 0;
     updateDisplay();
-    saveToServer();
+    saveToLocalStorage();
 }
 
-// Таймер
 function startTimer() {
     if (!gameData.timer.isRunning) {
         gameData.timer.isRunning = true;
@@ -42,7 +38,7 @@ function startTimer() {
                 gameData.timer.isRunning = false;
             }
             updateDisplay();
-            saveToServer();
+            saveToLocalStorage();
         }, 1000);
     }
 }
@@ -53,38 +49,23 @@ function resetTimer(minutes) {
     gameData.timer.minutes = minutes;
     gameData.timer.seconds = 0;
     updateDisplay();
-    saveToServer();
+    saveToLocalStorage();
 }
 
-// Сохранение данных
-async function saveToServer() {
-    try {
-        await fetch('save.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(gameData)
-        });
-    } catch (error) {
-        console.error('Ошибка сохранения:', error);
+function saveToLocalStorage() {
+    localStorage.setItem('scoreboardData', JSON.stringify(gameData));
+}
+
+function loadFromLocalStorage() {
+    const savedData = localStorage.getItem('scoreboardData');
+    if (savedData) {
+        const loadedData = JSON.parse(savedData);
+        gameData = { ...gameData, ...loadedData };
     }
-}
-
-// Загрузка данных
-async function loadFromServer() {
-    try {
-        const response = await fetch('data.json');
-        if (!response.ok) throw new Error('Не удалось загрузить данные');
-        const data = await response.json();
-        gameData = { ...gameData, ...data };
-        updateDisplay();
-    } catch (error) {
-        console.warn('Используем локальные данные:', error);
-    }
-}
-
-// Инициализация
-document.addEventListener('DOMContentLoaded', () => {
     updateDisplay();
-    loadFromServer();
-    setInterval(loadFromServer, 2000); // Обновляем каждые 2 секунды
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadFromLocalStorage();
+    setInterval(loadFromLocalStorage, 1000); // Обновляем каждую секунду
 });
