@@ -1,18 +1,35 @@
-<div class="control-panel">
-    <h2>Панель управления оверлеем</h2>
-    
-    <div>
-        <h3>Счёт</h3>
-        <button onclick="updateScore('team1', 1)">+1 Команда 1</button>
-        <button onclick="updateScore('team2', 1)">+1 Команда 2</button>
-    </div>
-    
-    <div>
-        <h3>Таймер</h3>
-        <button onclick="startTimer()">Старт</button>
-        <button onclick="resetTimer(10)">Сброс на 10 мин</button>
-        <button onclick="resetTimer(20)">Сброс на 20 мин</button>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель управления ScoreBoard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="control-panel">
+        <h2>Панель управления счётом и таймером</h2>
 
-<script src="script.js"></script>
+        <div class="score-controls">
+            <h3>Счёт</h3>
+            <button onclick="changeScore('team1', 1)">+1 Команда 1</button>
+            <button onclick="changeScore('team1', -1)">-1 Команда 1</button>
+            <br><br>
+            <button onclick="changeScore('team2', 1)">+1 Команда 2</button>
+            <button onclick="changeScore('team2', -1)">-1 Команда 2</button>
+        </div>
+
+        <div class="timer-controls">
+            <h3>Таймер</h3>
+            <button onclick="startTimer()">Старт</button>
+            <button onclick="resetTimer(10)">Сброс на 10 мин</button>
+            <button onclick="resetTimer(20)">Сброс на 20 мин</button>
+        </div>
+
+        <div id="current-score" style="margin-top: 20px;">
+            Текущий счёт: <span id="score">0 : 0</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
