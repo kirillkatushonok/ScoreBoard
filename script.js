@@ -1,53 +1,90 @@
-// Данные игры
-let score = { team1: 0, team2: 0 };
-let timer = { minutes: 0, seconds: 0 };
-let timerInterval;
-let isRunning = false;
+// Общие данные
+let gameData = {
+    score: { team1: 0, team2: 0 },
+    timer: { minutes: 0, seconds: 0, isRunning: false },
+    interval: null
+};
 
-// Элементы DOM
-const scoreElement = document.getElementById('score');
-const timerElement = document.getElementById('timer');
-
-// Обновление отображения
+// Функции обновления
 function updateDisplay() {
-    scoreElement.textContent = `${score.team1} : ${score.team2}`;
-    timerElement.textContent = 
-        `${timer.minutes.toString().padStart(2, '0')}:${timer.seconds.toString().padStart(2, '0')}`;
+    const scoreElement = document.getElementById('score');
+    const timerElement = document.getElementById('timer');
+
+    if (scoreElement) {
+        scoreElement.textContent = `${gameData.score.team1} : ${gameData.score.team2}`;
+    }
+    if (timerElement) {
+        timerElement.textContent =
+            `${gameData.timer.minutes.toString().padStart(2, '0')}:${gameData.timer.seconds.toString().padStart(2, '0')}`;
+    }
 }
 
 // Управление счётом
-function updateScore(team, points) {
-    if (team === 'team1') score.team1 += points;
-    else if (team === 'team2') score.team2 += points;
+function changeScore(team, delta) {
+    gameData.score[team] += delta;
+    if (gameData.score[team] < 0) gameData.score[team] = 0;
     updateDisplay();
+    saveToServer();
 }
 
 // Таймер
 function startTimer() {
-    if (!isRunning) {
-        isRunning = true;
-        timerInterval = setInterval(() => {
-            if (timer.seconds > 0) {
-                timer.seconds--;
-            } else if (timer.minutes > 0) {
-                timer.minutes--;
-                timer.seconds = 59;
+    if (!gameData.timer.isRunning) {
+        gameData.timer.isRunning = true;
+        gameData.interval = setInterval(() => {
+            if (gameData.timer.seconds > 0) {
+                gameData.timer.seconds--;
+            } else if (gameData.timer.minutes > 0) {
+                gameData.timer.minutes--;
+                gameData.timer.seconds = 59;
             } else {
-                clearInterval(timerInterval);
-                isRunning = false;
+                clearInterval(gameData.interval);
+                gameData.timer.isRunning = false;
             }
             updateDisplay();
+            saveToServer();
         }, 1000);
     }
 }
 
 function resetTimer(minutes) {
-    clearInterval(timerInterval);
-    isRunning = false;
-    timer.minutes = minutes;
-    timer.seconds = 0;
+    clearInterval(gameData.interval);
+    gameData.timer.isRunning = false;
+    gameData.timer.minutes = minutes;
+    gameData.timer.seconds = 0;
     updateDisplay();
+    saveToServer();
+}
+
+// Сохранение данных
+async function saveToServer() {
+    try {
+        await fetch('save.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(gameData)
+        });
+    } catch (error) {
+        console.error('Ошибка сохранения:', error);
+    }
+}
+
+// Загрузка данных
+async function loadFromServer() {
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error('Не удалось загрузить данные');
+        const data = await response.json();
+        gameData = { ...gameData, ...data };
+        updateDisplay();
+    } catch (error) {
+        console.warn('Используем локальные данные:', error);
+    }
 }
 
 // Инициализация
-updateDisplay();
+document.addEventListener('DOMContentLoaded', () => {
+    updateDisplay();
+    loadFromServer();
+    setInterval(loadFromServer, 2000); // Обновляем каждые 2 секунды
+});
