@@ -2,39 +2,60 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScoreBoard — Главная</title>
+    <title>ScoreBoard Overlay</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: #f0f0f0;
             margin: 0;
-            padding: 50px;
-        }
-        .control-link {
-            display: inline-block;
-            padding: 15px 30px;
-            background-color: #007BFF;
+            padding: 0;
+            background: transparent;
             color: white;
-            text-decoration: none;
-            font-size: 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            font-family: Arial, sans-serif;
         }
-        .control-link:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        .overlay {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .score-board {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        .team {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .score {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .timer {
+            font-size: 2.5rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>ScoreBoard</h1>
-    <p>Система отображения счёта и времени игры</p>
-    <div style="margin-top: 50px;">
-        <a href="control.html" class="control-link">Перейти к панели управления</a>
+    <div class="overlay">
+        <div class="score-board">
+            <div class="team">Команда 1</div>
+            <div class="score" id="score">0 : 0</div>
+            <div class="team">Команда 2</div>
+        </div>
+        <div class="timer" id="timer">00:00</div>
     </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
